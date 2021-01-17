@@ -14,6 +14,8 @@ parserOptions:
 rules:
   immutable/no-mutation: 'off'
   immutable/no-this: 'off'
+  react/jsx-uses-react: 'error'
+  react/jsx-uses-vars: 'error'
   unicorn/filename-case:
     - error
     - case: kebabCase
