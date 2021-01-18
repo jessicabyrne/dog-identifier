@@ -3,48 +3,55 @@ import './my-component.css';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import React, { useEffect, useRef as useReference, useState } from 'react';
 
-/*
- * Have tensorflow model get dog breed, then put dog breed into DogAPI:
- * https://dog.ceo/api/breed/{breed}/images
- * map over resulting images
- */
+import { getDogPictures } from '../../api/get-dog-pictures';
 
 const MyComponent: React.FC = (): JSX.Element => {
   const [imageURL, setImageURL] = useState('');
   const [results, setResults] = useState([]);
-  const [model, setModel] = useState(Event | undefined);
+  const [model, setModel] = useState(null);
+  const [dogImages, setDogImages] = useState([]);
+  const [error, setError] = useState('');
 
   const imageReference = useReference();
-  const inputReference = useReference();
 
   useEffect(async () => {
     const modelOnLoad = await mobilenet.load();
-    console.log('model on load');
-    console.log(modelOnLoad);
 
     return setModel(modelOnLoad);
   });
 
+  useEffect(async () => {
+    const bestMatchDogBreed = results[0]?.className.toLowerCase();
+    await getDogPictures(bestMatchDogBreed).then(dogImageUrl => {
+      setDogImages(dogImageUrl.message);
+    });
+  }, [results]);
+
   const handleImageUpload = (event: React.FormEvent<HTMLFormElement>) => {
     const { files } = event.target;
-    const url = URL.createObjectURL(event.target.files[0]);
-    setImageURL(url);
+
+    if (files.length > 0) {
+      const localURL = URL.createObjectURL(event.target.files[0]);
+
+      return setImageURL(localURL);
+    }
   };
 
   const identifyDogBreed = async e => {
     e.preventDefault();
-    console.log(model);
+
+    if (!imageURL) return setError('Upload valid image');
+
     const classifiedModel = await model.classify(imageReference.current);
-    console.log(classifiedModel);
     setResults(classifiedModel);
-    console.log(results);
   };
 
-  // @tensorflow/tfjs-backend-cpu
   return (
     <div>
       <h1 className="previewText">Image Preview in Reactjs</h1>
-
+      {imageURL && (
+        <img src={imageURL} alt="uploaded-image" ref={imageReference} />
+      )}
       <form>
         <label htmlFor="photo" className="form-img__file-label" />
         <input
@@ -66,10 +73,10 @@ const MyComponent: React.FC = (): JSX.Element => {
         ) : (
           <span>Waiting for model to load...</span>
         )}
-        {imageURL && (
-          <img src={imageURL} alt="uploaded-image" ref={imageReference} />
-        )}
-        {results[0]?.className}
+        {dogImages.map((imgSource, index: number) => (
+          <img src={imgSource} key={index} />
+        ))}
+        {error}
       </form>
     </div>
   );
