@@ -1,4 +1,4 @@
-export const getDogPictures = async (dogBreed: string) => {
+export const getDogPictures = async (dogBreed: string): Promise<unknown> => {
   if (dogBreed) {
     const response = await fetch(
       `https://dog.ceo/api/breed/${dogBreed}/images`,

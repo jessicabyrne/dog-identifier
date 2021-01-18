@@ -2,7 +2,8 @@
   "dependencies": {
     "@tensorflow/tfjs": "^2.8.4",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-lazy-load": "^3.1.13"
   },
   "description": "Search for dogs",
   "devDependencies": {
