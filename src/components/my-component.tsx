@@ -12,15 +12,17 @@ import React, { useEffect, useRef as useReference, useState } from 'react';
 const MyComponent: React.FC = (): JSX.Element => {
   const [imageURL, setImageURL] = useState('');
   const [results, setResults] = useState([]);
-  const [model, setModel] = useState(null);
+  const [model, setModel] = useState(Event | undefined);
 
   const imageReference = useReference();
   const inputReference = useReference();
 
   useEffect(async () => {
-    console.log('i am here!');
+    const modelOnLoad = await mobilenet.load();
+    console.log('model on load');
+    console.log(modelOnLoad);
 
-    return setModel(await mobilenet.load());
+    return setModel(modelOnLoad);
   });
 
   const handleImageUpload = (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,20 +31,20 @@ const MyComponent: React.FC = (): JSX.Element => {
     setImageURL(url);
   };
 
-  const identifyDogBreed = async () => {
+  const identifyDogBreed = async e => {
+    e.preventDefault();
     console.log(model);
-
-    results = await model.classify(imageReference.current);
-    setResults(results);
+    const classifiedModel = await model.classify(imageReference.current);
+    console.log(classifiedModel);
+    setResults(classifiedModel);
     console.log(results);
   };
 
+  // @tensorflow/tfjs-backend-cpu
   return (
     <div>
       <h1 className="previewText">Image Preview in Reactjs</h1>
-      {imageURL && (
-        <img src={imageURL} alt="uploaded-image" ref={imageReference} />
-      )}
+
       <form>
         <label htmlFor="photo" className="form-img__file-label" />
         <input
@@ -50,15 +52,24 @@ const MyComponent: React.FC = (): JSX.Element => {
           className="fileInput"
           accept="image/*"
           capture="camera" // For mobile
+          multiple={false}
           onChange={handleImageUpload}
         />
-        <button
-          className="submitButton"
-          type="submit"
-          onClick={identifyDogBreed}
-        >
-          Upload Image
-        </button>
+        {model ? (
+          <button
+            className="submitButton"
+            type="submit"
+            onClick={identifyDogBreed}
+          >
+            Upload Image
+          </button>
+        ) : (
+          <span>Waiting for model to load...</span>
+        )}
+        {imageURL && (
+          <img src={imageURL} alt="uploaded-image" ref={imageReference} />
+        )}
+        {results[0]?.className}
       </form>
     </div>
   );
