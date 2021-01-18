@@ -1,7 +1,7 @@
 import './my-component.css';
 
 import * as mobilenet from '@tensorflow-models/mobilenet';
-import React, { useRef as useReference, useState } from 'react';
+import React, { useEffect, useRef as useReference, useState } from 'react';
 
 /*
  * Have tensorflow model get dog breed, then put dog breed into DogAPI:
@@ -17,6 +17,12 @@ const MyComponent: React.FC = (): JSX.Element => {
   const imageReference = useReference();
   const inputReference = useReference();
 
+  useEffect(async () => {
+    console.log('i am here!');
+
+    return setModel(await mobilenet.load());
+  });
+
   const handleImageUpload = (event: React.FormEvent<HTMLFormElement>) => {
     const { files } = event.target;
     const url = URL.createObjectURL(event.target.files[0]);
@@ -24,11 +30,9 @@ const MyComponent: React.FC = (): JSX.Element => {
   };
 
   const identifyDogBreed = async () => {
-    const model = await mobilenet.load();
-    setModel(model);
     console.log(model);
 
-    const results = await model.classify(imageReference.current);
+    results = await model.classify(imageReference.current);
     setResults(results);
     console.log(results);
   };

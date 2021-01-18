@@ -1,14 +1,14 @@
 {
   "dependencies": {
-    "@tensorflow-models/mobilenet": "^2.0.4",
     "@tensorflow/tfjs": "^2.8.4",
-    "@tensorflow/tfjs-converter": "^2.8.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "description": "Search for dogs",
   "devDependencies": {
     "@ridedott/eslint-config": "^1.0.0",
+    "@tensorflow-models/mobilenet": "^2.0.4",
+    "@tensorflow/tfjs-converter": "^2.8.4",
     "@types/jest": "^25.1.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
